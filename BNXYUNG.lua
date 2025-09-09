@@ -3,7 +3,6 @@ local LocalPlayer = Players.LocalPlayer
 local StarterGui = game:GetService("StarterGui")
 local RunService = game:GetService("RunService")
 
--- LOGIN
 local username = "BNX"
 local password = "1234"
 
@@ -66,10 +65,6 @@ local function showLogin()
     end)
 end
 
--- FUNCIONES
-local aimbotActivo = false
-local espActivo = false
-
 local function getClosestEnemy()
     local closest = nil
     local shortest = math.huge
@@ -85,6 +80,7 @@ local function getClosestEnemy()
     return closest
 end
 
+local aimbotActivo = false
 local function activarAimbotLag()
     aimbotActivo = not aimbotActivo
     StarterGui:SetCore("SendNotification", {
@@ -99,27 +95,34 @@ local function activarAimbotLag()
             if target and target.Character and target.Character:FindFirstChild("Head") then
                 workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, target.Character.Head.Position)
                 LocalPlayer.Character:MoveTo(target.Character.HumanoidRootPart.Position + Vector3.new(0, 2, 0))
-                target.Character.HumanoidRootPart.Anchored = true
-                wait(0.2)
-                target.Character.HumanoidRootPart.Anchored = false
             end
         end)
     end
 end
 
+local espActivo = false
 local function activarESP()
     espActivo = not espActivo
+    StarterGui:SetCore("SendNotification", {
+        Title = "BNXYUNG",
+        Text = espActivo and "ESP Activado 👁️" or "ESP Desactivado ❌",
+        Duration = 4
+    })
+
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
             if espActivo then
-                local line = Instance.new("Beam", p.Character.HumanoidRootPart)
-                line.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
-                line.Width0 = 0.1
-                line.Width1 = 0.1
-                line.Name = "BNX_ESP"
+                local billboard = Instance.new("BillboardGui", p.Character.HumanoidRootPart)
+                billboard.Size = UDim2.new(0, 100, 0, 40)
+                billboard.AlwaysOnTop = true
+                local label = Instance.new("TextLabel", billboard)
+                label.Size = UDim2.new(1, 0, 1, 0)
+                label.Text = p.Name
+                label.TextColor3 = Color3.fromRGB(255, 0, 0)
+                label.BackgroundTransparency = 1
             else
-                for _, v in pairs(p.Character.HumanoidRootPart:GetChildren()) do
-                    if v.Name == "BNX_ESP" then v:Destroy() end
+                for _, gui in pairs(p.Character.HumanoidRootPart:GetChildren()) do
+                    if gui:IsA("BillboardGui") then gui:Destroy() end
                 end
             end
         end
@@ -160,12 +163,11 @@ end
 local function cambiarIdioma()
     StarterGui:SetCore("SendNotification", {
         Title = "BNXYUNG",
-        Text = "Language switched to English 🌐",
+        Text = "Idioma cambiado a Español 🌐",
         Duration = 4
     })
 end
 
--- MENÚ PRINCIPAL
 function loadMenu()
     local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
     gui.Name = "BNXYUNG_Menu"
@@ -190,4 +192,4 @@ function loadMenu()
         btn.Text = text
         btn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-       
+        btn
